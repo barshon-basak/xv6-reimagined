@@ -5,6 +5,8 @@ struct rtcdate;
 int fork(void);
 int settickets(int, int);
 int yield(void);
+int ksend(int, const void*, int);
+int krecv(int, void*, int);
 int exit(void) __attribute__((noreturn));
 int wait(void);
 int pipe(int*);

@@ -106,3 +106,39 @@ sys_yield(void)
   yield();
   return 0;
 }
+
+// sys_ksend: system call wrapper for ksend().
+// Arguments: chan (int), buf (pointer), len (int)
+int
+sys_ksend(void)
+{
+  int chan, len;
+  char *buf;
+
+  if(argint(0, &chan) < 0)
+    return -1;
+  if(argint(2, &len) < 0)
+    return -1;
+  if(argptr(1, &buf, len) < 0)
+    return -1;
+
+  return ksend(chan, buf, len);
+}
+
+// sys_krecv: system call wrapper for krecv().
+// Arguments: chan (int), buf (pointer), maxlen (int)
+int
+sys_krecv(void)
+{
+  int chan, maxlen;
+  char *buf;
+
+  if(argint(0, &chan) < 0)
+    return -1;
+  if(argint(2, &maxlen) < 0)
+    return -1;
+  if(argptr(1, &buf, maxlen) < 0)
+    return -1;
+
+  return krecv(chan, buf, maxlen);
+}

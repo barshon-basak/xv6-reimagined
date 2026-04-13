@@ -105,6 +105,8 @@ extern int sys_write(void);
 extern int sys_uptime(void);
 extern int sys_settickets(void);
 extern int sys_yield(void);
+extern int sys_ksend(void);
+extern int sys_krecv(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -123,6 +125,8 @@ static int (*syscalls[])(void) = {
 [SYS_uptime]  sys_uptime,
 [SYS_settickets] sys_settickets,
 [SYS_yield]      sys_yield,
+[SYS_ksend]      sys_ksend,
+[SYS_krecv]      sys_krecv,
 [SYS_open]    sys_open,
 [SYS_write]   sys_write,
 [SYS_mknod]   sys_mknod,

@@ -22,4 +22,6 @@
 #define SYS_close  21
 #define SYS_settickets 22
 #define SYS_yield      23
+#define SYS_ksend      24
+#define SYS_krecv      25
 
