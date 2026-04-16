@@ -353,12 +353,12 @@ scheduler(void)
         counter += p->tickets;
 
         if(counter > winner){           // this process won the lottery
-          // only trace when user test processes are involved
-          if(p->pid > 2){
-            round++;
-            cprintf("[round %d] total=%d winner=%d -> pid %d (%s) tickets=%d\n",
-                    round, total_tickets, winner, p->pid, p->name, p->tickets);
-          }
+          // debug trace disabled
+          // if(p->pid > 2){
+          //   round++;
+          //   cprintf("[round %d] total=%d winner=%d -> pid %d (%s) tickets=%d\n",
+          //           round, total_tickets, winner, p->pid, p->name, p->tickets);
+          // }
           c->proc = p;
           switchuvm(p);
           p->state = RUNNING;
@@ -422,12 +422,13 @@ yield(void)
   }
 
   // only print for non-system processes so boot isn't spammy
-  if(p->pid > 2){
-    if(p->preempted)
-      cprintf("  [yield] pid %d PREEMPTED -> tickets now %d\n", p->pid, p->tickets);
-    else
-      cprintf("  [yield] pid %d voluntary -> tickets now %d\n", p->pid, p->tickets);
-  }
+  // debug trace disabled
+  // if(p->pid > 2){
+  //   if(p->preempted)
+  //     cprintf("  [yield] pid %d PREEMPTED -> tickets now %d\n", p->pid, p->tickets);
+  //   else
+  //     cprintf("  [yield] pid %d voluntary -> tickets now %d\n", p->pid, p->tickets);
+  // }
   p->preempted = 0;
   p->state = RUNNABLE;
   sched();

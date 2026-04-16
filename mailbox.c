@@ -14,7 +14,6 @@
 #include "param.h"
 #include "spinlock.h"
 #include "mailbox.h"
-#include "string.h"
 
 // The global array of mailboxes, shared across all processes.
 struct mailbox mailboxes[NUM_MAILBOXES];
