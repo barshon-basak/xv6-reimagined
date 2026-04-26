@@ -183,10 +183,7 @@ UPROGS=\
 	_usertests\
 	_wc\
 	_zombie\
-	_testlottery\
-	_testdynamic\
 	_schedtest\
-	_schedtest2\
 	_testmailbox
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
