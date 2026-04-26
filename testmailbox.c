@@ -79,20 +79,23 @@ void test3(void)
   int pid = fork();
   if(pid == 0){
     // child: send one message on each channel
-    ksend(0, "chan0", 5);
-    ksend(1, "chan1", 5);
-    ksend(2, "chan2", 5);
+    ksend(0, "chan0", 6);
+    ksend(1, "chan1", 6);
+    ksend(2, "chan2", 6);
     exit();
   } else {
     char buf[MSGSIZE];
     int ok = 1;
 
+    memset(buf, 0, sizeof(buf));
     krecv(0, buf, sizeof(buf));
     if(strcmp(buf, "chan0") != 0){ printf(1, "  FAILED ch0: '%s'\n", buf); ok=0; }
 
+    memset(buf, 0, sizeof(buf));
     krecv(1, buf, sizeof(buf));
     if(strcmp(buf, "chan1") != 0){ printf(1, "  FAILED ch1: '%s'\n", buf); ok=0; }
 
+    memset(buf, 0, sizeof(buf));
     krecv(2, buf, sizeof(buf));
     if(strcmp(buf, "chan2") != 0){ printf(1, "  FAILED ch2: '%s'\n", buf); ok=0; }
 
