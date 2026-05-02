@@ -107,6 +107,12 @@ sys_yield(void)
   return 0;
 }
 
+int
+sys_getrunticks(void)
+{
+  return myproc()->runticks;
+}
+
 // sys_ksend: system call wrapper for ksend().
 // Arguments: chan (int), buf (pointer), len (int)
 int

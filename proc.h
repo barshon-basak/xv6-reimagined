@@ -51,6 +51,7 @@ struct proc {
   char name[16];               // Process name (debugging)
   int tickets;
   int preempted;               // 1 if forced off CPU by timer, 0 if yielded voluntarily
+  int runticks;                // Number of timer ticks this process has been running
 };
 int settickets(int pid, int tickets);
 // Process memory is laid out contiguously, low addresses first:

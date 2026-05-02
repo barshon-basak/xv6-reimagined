@@ -4,6 +4,7 @@ struct rtcdate;
 // system calls
 int fork(void);
 int settickets(int, int);
+int getrunticks(void);
 int yield(void);
 int ksend(int, const void*, int);
 int krecv(int, void*, int);

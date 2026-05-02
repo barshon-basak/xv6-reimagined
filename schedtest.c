@@ -8,7 +8,7 @@
 struct result {
   int pid;
   int tickets;
-  int ticks;       // uptime delta (elapsed ticks)
+  int ticks;       // number of times scheduled (or elapsed ticks)
   int kind;        // 0=cpu, 1=io, 2=yield
 };
 
@@ -60,6 +60,7 @@ void collect(int pipes[][2], struct result *res, int n)
 
 // ---------------------------------------------------------------
 // spawn_cpu: CPU-bound child
+// Runs for a fixed duration, measuring actual CPU time received
 // ---------------------------------------------------------------
 void spawn_cpu(int tickets, int pipefd[2])
 {
@@ -70,15 +71,22 @@ void spawn_cpu(int tickets, int pipefd[2])
     settickets(mypid, tickets);
 
     int start = uptime();
-    volatile int x = 0;
-    int j;
-    for (j = 0; j < 2000000; j++) x++;
-    int elapsed = uptime() - start;
+    
+    // Run for approximately 800 ticks of wall-clock time (longer for better statistics)
+    while(uptime() - start < 800){
+      // Do some CPU work to keep busy
+      volatile int x = 0;
+      int j;
+      for (j = 0; j < 100000; j++) x++;
+    }
+    
+    // Get actual CPU time (timer ticks while running)
+    int cpu_time = getrunticks();
 
     struct result r;
     r.pid     = mypid;
     r.tickets = tickets;
-    r.ticks   = elapsed;
+    r.ticks   = cpu_time;  // actual CPU time received
     r.kind    = 0;
     write(pipefd[1], &r, sizeof(r));
     close(pipefd[1]);
@@ -90,6 +98,8 @@ void spawn_cpu(int tickets, int pipefd[2])
 // ---------------------------------------------------------------
 // spawn_io: IO-bound child (sleeps in a loop)
 // ---------------------------------------------------------------
+// spawn_io: IO-bound child (sleeps in a loop)
+// ---------------------------------------------------------------
 void spawn_io(int tickets, int pipefd[2])
 {
   int pid = fork();
@@ -98,15 +108,16 @@ void spawn_io(int tickets, int pipefd[2])
     int mypid = getpid();
     settickets(mypid, tickets);
 
-    int start = uptime();
     int j;
-    for (j = 0; j < 20; j++) sleep(5);
-    int elapsed = uptime() - start;
+    for (j = 0; j < 100; j++) sleep(5);
+    
+    // Get actual CPU time (should be very low since mostly sleeping)
+    int cpu_time = getrunticks();
 
     struct result r;
     r.pid     = mypid;
     r.tickets = tickets;
-    r.ticks   = elapsed;
+    r.ticks   = cpu_time;
     r.kind    = 1;
     write(pipefd[1], &r, sizeof(r));
     close(pipefd[1]);
@@ -126,15 +137,16 @@ void spawn_yield(int tickets, int pipefd[2])
     int mypid = getpid();
     settickets(mypid, tickets);
 
-    int start = uptime();
     int j;
-    for (j = 0; j < 500; j++) yield();
-    int elapsed = uptime() - start;
+    for (j = 0; j < 2500; j++) yield();
+    
+    // Get actual CPU time (should be low since yielding frequently)
+    int cpu_time = getrunticks();
 
     struct result r;
     r.pid     = mypid;
     r.tickets = tickets;
-    r.ticks   = elapsed;
+    r.ticks   = cpu_time;
     r.kind    = 2;
     write(pipefd[1], &r, sizeof(r));
     close(pipefd[1]);
@@ -160,7 +172,7 @@ void experiment1(void)
     spawn_cpu(10, pipes[i]);
   }
 
-  sleep(200);
+  sleep(850);  // Wait for all processes to complete their 800-tick run
   collect(pipes, res, NEXP_PROCS);
   print_stats("EXPERIMENT 1: Equal Tickets (Fairness)", res, NEXP_PROCS);
 }
@@ -185,7 +197,7 @@ void experiment2(void)
     spawn_cpu(10, pipes[i]);
   }
 
-  sleep(200);
+  sleep(850);  // Wait for all processes to complete their 800-tick run
   collect(pipes, res, NEXP_PROCS);
   print_stats("EXPERIMENT 2: Weighted Tickets (Priority)", res, NEXP_PROCS);
 }
@@ -215,7 +227,7 @@ void experiment3(void)
     spawn_yield(10, pipes[i]);
   }
 
-  sleep(300);
+  sleep(600);
   collect(pipes, res, NEXP_PROCS);
   print_stats("EXPERIMENT 3: CPU vs IO vs Yield", res, NEXP_PROCS);
 }
@@ -239,7 +251,7 @@ void experiment4(void)
     spawn_cpu(100, pipes[i]);
   }
 
-  sleep(400);
+  sleep(850);  // Wait for all processes to complete
   collect(pipes, res, NEXP_PROCS);
   print_stats("EXPERIMENT 4: Starvation Test", res, NEXP_PROCS);
 }

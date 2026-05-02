@@ -184,7 +184,8 @@ UPROGS=\
 	_wc\
 	_zombie\
 	_schedtest\
-	_testmailbox
+	_testmailbox\
+	_testmailbox2
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
 

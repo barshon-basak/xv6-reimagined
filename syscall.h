@@ -24,4 +24,5 @@
 #define SYS_yield      23
 #define SYS_ksend      24
 #define SYS_krecv      25
+#define SYS_getrunticks 26
 

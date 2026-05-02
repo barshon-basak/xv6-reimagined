@@ -107,6 +107,7 @@ extern int sys_settickets(void);
 extern int sys_yield(void);
 extern int sys_ksend(void);
 extern int sys_krecv(void);
+extern int sys_getrunticks(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -127,6 +128,7 @@ static int (*syscalls[])(void) = {
 [SYS_yield]      sys_yield,
 [SYS_ksend]      sys_ksend,
 [SYS_krecv]      sys_krecv,
+[SYS_getrunticks] sys_getrunticks,
 [SYS_open]    sys_open,
 [SYS_write]   sys_write,
 [SYS_mknod]   sys_mknod,
